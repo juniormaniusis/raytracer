@@ -64,12 +64,17 @@ makeDirection i j = lowerLeftCorner `sumV` (u `mulV` horizontal) `sumV` (v `mulV
 
 rayColor :: Ray -> Color
 rayColor ray = 
-  if hitSphere (Vec3 0 0 (-1)) 0.5 ray then 
-      Color 1 0 0
-    else
+  if t' > 0 then 
+    corColisao
+  else
     ((1.0 - t) `mulC` branco) `sumC` (t `mulC` azul)
 
   where
+    esferaPosition = Vec3 0 0 (-1)
+    esferaRadius = 0.5
+    normalDir = unitarioV $ getRayAt ray t  `subV` esferaPosition       -- vec3 N = unit_vector(r.at(t) - vec3(0,0,-1));
+    corColisao = 0.5 `mulC` Color (getX normalDir + 1) (getY normalDir + 1) (getZ normalDir + 1)
+    t' = hitSphere esferaPosition esferaRadius ray 
     t = 0.5 * (dy + 1)
       where
         dy = getY $ unitarioV $ getRayDirection ray
@@ -130,11 +135,12 @@ data Ray = Ray
 getRayAt :: Ray -> Double -> Vec3
 getRayAt ray t = getRayOrigin ray `sumV` mulV t (getRayDirection ray)
 
-hitSphere :: Vec3 -> Double -> Ray -> Bool
-hitSphere centro raioEsfera ray = discriminant > 0
+hitSphere :: Vec3 -> Double -> Ray -> Double
+hitSphere centro raioEsfera ray = if discriminant < 0 then -1 else smallestPoint
         where a = getRayDirection ray `dotV` getRayDirection ray
               b = 2 * (oc `dotV` getRayDirection ray)
               c = (oc `dotV` oc) - raioEsfera*raioEsfera;
               oc = getRayOrigin ray `subV` centro
               discriminant = b*b - (4 * a * c)
+              smallestPoint = (-b - sqrt discriminant) / 2*a
 

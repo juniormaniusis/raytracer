@@ -111,7 +111,7 @@ mulC :: Double -> Color -> Color
 mulC num (Color x2 y2 z2) = Color (num * x2) (num * y2) (num * z2)
 
 normaV :: Vec3 -> Double
-normaV (Vec3 x y z) = sqrt ((x * x) + (y * y) + (z * z))
+normaV (Vec3 x y z) = sqrt $ (x * x) + (y * y) + (z * z)
 
 unitarioV :: Vec3 -> Vec3
 unitarioV v = (1 / normaV v) `mulV` v
@@ -124,7 +124,7 @@ data Color = Color
   deriving (Eq, Read)
 
 instance Show Color where
-  show c = show (round (getR c * 255.99)) ++ " " ++ show (round (getG c * 255.99)) ++ " " ++ show (round (getB c * 255.99))
+  show c = show (floor (getR c * 255.99)) ++ " " ++ show (floor (getG c * 255.99)) ++ " " ++ show (floor (getB c * 255.99))
 
 data Ray = Ray
   { getRayOrigin :: Vec3,

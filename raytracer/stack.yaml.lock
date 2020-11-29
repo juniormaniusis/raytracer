@@ -3,7 +3,14 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    hackage: ghc-exactprint-0.6.3.3@sha256:384e1066c192ed60dc12443b7aca75a4a4adcc47f829336c21ed007596fe683f,9446
+    pantry-tree:
+      size: 86248
+      sha256: c43b6e600634f5d5df2feb69e27e745fff25fe60503a30d3e5c86428882b686f
+  original:
+    hackage: ghc-exactprint-0.6.3.3@sha256:384e1066c192ed60dc12443b7aca75a4a4adcc47f829336c21ed007596fe683f,9446
 snapshots:
 - completed:
     size: 532413

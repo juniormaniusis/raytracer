@@ -29,12 +29,12 @@ version :: Version
 version = Version [0,1,0,0] []
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
-bindir     = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/a031b96bc84918c1844d01bd0880c9b97752e002b159975c07742af048e28d81/8.8.4/bin"
-libdir     = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/a031b96bc84918c1844d01bd0880c9b97752e002b159975c07742af048e28d81/8.8.4/lib/x86_64-osx-ghc-8.8.4/raytracer-0.1.0.0-7AVvOC7sDRL79wuq35LMQa-raytracer"
-dynlibdir  = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/a031b96bc84918c1844d01bd0880c9b97752e002b159975c07742af048e28d81/8.8.4/lib/x86_64-osx-ghc-8.8.4"
-datadir    = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/a031b96bc84918c1844d01bd0880c9b97752e002b159975c07742af048e28d81/8.8.4/share/x86_64-osx-ghc-8.8.4/raytracer-0.1.0.0"
-libexecdir = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/a031b96bc84918c1844d01bd0880c9b97752e002b159975c07742af048e28d81/8.8.4/libexec/x86_64-osx-ghc-8.8.4/raytracer-0.1.0.0"
-sysconfdir = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/a031b96bc84918c1844d01bd0880c9b97752e002b159975c07742af048e28d81/8.8.4/etc"
+bindir     = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/7d82c7c9054d7828709f9c6a894d8474c5d390c07b0769d98cdc578627735776/8.8.4/bin"
+libdir     = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/7d82c7c9054d7828709f9c6a894d8474c5d390c07b0769d98cdc578627735776/8.8.4/lib/x86_64-osx-ghc-8.8.4/raytracer-0.1.0.0-7AVvOC7sDRL79wuq35LMQa-raytracer"
+dynlibdir  = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/7d82c7c9054d7828709f9c6a894d8474c5d390c07b0769d98cdc578627735776/8.8.4/lib/x86_64-osx-ghc-8.8.4"
+datadir    = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/7d82c7c9054d7828709f9c6a894d8474c5d390c07b0769d98cdc578627735776/8.8.4/share/x86_64-osx-ghc-8.8.4/raytracer-0.1.0.0"
+libexecdir = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/7d82c7c9054d7828709f9c6a894d8474c5d390c07b0769d98cdc578627735776/8.8.4/libexec/x86_64-osx-ghc-8.8.4/raytracer-0.1.0.0"
+sysconfdir = "/Users/carlosmaniusis/repos/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-osx/7d82c7c9054d7828709f9c6a894d8474c5d390c07b0769d98cdc578627735776/8.8.4/etc"
 
 getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
 getBinDir = catchIO (getEnv "raytracer_bindir") (\_ -> return bindir)

@@ -104,12 +104,15 @@ validHit (Just _) = True
 rayBundleColor :: RayBundle ->  World -> Aleatorio Color
 rayBundleColor [r] world  = do rayColor' world r depth
 rayBundleColor (r:rs) world = do
+
                                   color <- rayColor' world r depth
                                   restBundleColor <- rayBundleColor rs world
                                   return (sumC color restBundleColor)
 
+
 rayColor :: World -> Ray -> Aleatorio Color
-rayColor w r = rayColor' w r depth
+rayColor w r = rc `using` rseq
+                where rc =  rayColor' w r depth
 
 rayColor' :: World -> Ray -> Int -> Aleatorio Color
 rayColor' _ _ 0 = return cPreto

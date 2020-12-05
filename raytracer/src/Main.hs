@@ -1,13 +1,21 @@
 import AlgebraLinear
 import ColorMath
-import Data.List
+import Data.List (sort)
+import System.Random
+import Control.Monad.State
+import Utils
+import Data.Maybe
+import Control.Parallel.Strategies
+import Control.Exception
+import Data.Time.Clock
+import Control.DeepSeq
 -- configurações da imagem
 -- image
 aspectRatio :: Double
 aspectRatio = 16.0 / 9.0
 
 imageWidth :: Integer
-imageWidth = 400
+imageWidth = 800
 
 imageHeight :: Integer
 imageHeight = round $ fromInteger imageWidth / aspectRatio
@@ -34,23 +42,38 @@ vertical = Vec3 0 viewPortHeight 0
 lowerLeftCorner :: Vec3
 lowerLeftCorner = origin `subV` (0.5 `mulV` horizontal) `subV` (0.5 `mulV` vertical) `subV` Vec3 0 0 focalLength
 
+type Coordinate = (Integer, Integer)
+makeRayBundle :: Vec3 -> Coordinate -> RayBundle
+makeRayBundle origem (x, y) = [Ray origem (makeDirection (fromInteger x + d) (fromInteger y + d)) | d <- take samplePerPixel (randoms (mkStdGen (fromInteger x + fromInteger y)) :: [Double])]
+
 main :: IO ()
 main = do
-  let raios =
-        [ Ray origin (makeDirection (fromInteger i) (fromInteger j))
-          | j <- [imageHeight - 1, imageHeight - 2 .. 0], i <- [0 .. imageWidth - 1]
-        ]
-  --let colors = map rayColor raios
-  let world = [
-                Sphere (Vec3 0 0 (-1)) 0.5
-              , Sphere (Vec3 0 (-100.5) (-1)) 100
-              ]
-  let colors =  map (rayColor world) raios
-  let pixels = map ((++ "\n") . show) colors
-  let concated = concat pixels
+  t0 <- getCurrentTime
+  print t0
+  g <- getStdGen
+  let pixels = fmap (map ((++ "\n") . show)) (evaluateRayBundle raios world)
   let header = "P3\n"++ show imageWidth ++ " " ++ show imageHeight ++ "\n255\n"
-  putStr (header ++ concated)
+  let s = evalState pixels g
+  let fp = "image" ++  show t0 ++ ".ppm"
+  writeFile fp (header ++ concat s)
+  t1 <- getCurrentTime
+  print (diffUTCTime t1 t0)
+    where
+      raios = [ makeRayBundle origin (i, j) | j <- [imageHeight - 1, imageHeight - 2 .. 0], i <- [0 .. imageWidth - 1] ]
+      world = [
+                Sphere (Vec3 0 0 (-1)) 0.5,
+                Sphere (Vec3 2 0 (-1.5)) 0.25,
+                Sphere (Vec3 0 (-100.5) (-1)) 100
+              ]
 
+
+
+evaluateRayBundle :: [RayBundle] -> World -> Aleatorio [Color]
+evaluateRayBundle [] _  = do return []
+evaluateRayBundle (x:xs) w  = do
+                            color <-  rayBundleColor  x w
+                            otherColors <- evaluateRayBundle xs w
+                            return (color : otherColors)
 
 makeDirection :: Double -> Double -> Vec3
 makeDirection i j = lowerLeftCorner `sumV` (u `mulV` horizontal) `sumV` (v `mulV` vertical) `subV` origin
@@ -59,11 +82,8 @@ makeDirection i j = lowerLeftCorner `sumV` (u `mulV` horizontal) `sumV` (v `mulV
     v = j / (fromInteger imageHeight -1)
 
 type World = [Sphere]
-
-
 type Range = (Double, Double)
 
---hitSphere :: Sphere -> Ray -> Range -> Maybe HitRecord
 closestHit :: Ray -> Range -> World -> Maybe HitRecord
 closestHit ray range world = safeMinimum (map extractValue (filter  validHit hits))
   where hits = [ hitSphere s ray range  | s <- world]
@@ -71,58 +91,53 @@ closestHit ray range world = safeMinimum (map extractValue (filter  validHit hit
 extractValue :: Maybe v -> v
 extractValue (Just v) = v
 extractValue Nothing = error "operacao de extracao invalida"
+
 safeMinimum :: (Traversable t, Ord a) => t a -> Maybe a
 safeMinimum xs
   | null xs   = Nothing
   | otherwise = Just (minimum xs)
+
 validHit :: Maybe HitRecord -> Bool
 validHit Nothing = False
 validHit (Just _) = True
---rayColor ray =
-  --if t' > 0 then
-    --corColisao
-  --else
-    --((1.0 - t) `mulC` branco) `sumC` (t `mulC` azul)
 
-  --where
-    --esferaPosition = Vec3 0 0 (-1)
-    --esferaRadius = 0.5
-    --normalDir = unitarioV $ getRayAt ray t  `subV` esferaPosition
-    --corColisao = 0.5 `mulC` Color (getX normalDir + 1) (getY normalDir + 1) (getZ normalDir + 1)
-    --t' = hitSphere esferaPosition esferaRadius ray
-    --t = 0.5 * (dy + 1)
-      --where
-        --dy = getY $ unitarioV $ getRayDirection ray
+rayBundleColor :: RayBundle ->  World -> Aleatorio Color
+rayBundleColor [r] world  = do rayColor' world r depth
+rayBundleColor (r:rs) world = do
+                                  color <- rayColor' world r depth
+                                  restBundleColor <- rayBundleColor rs world
+                                  return (sumC color restBundleColor)
 
-rayColor :: World -> Ray -> Color
-rayColor world ray = color
-  where
-   color
-    | hit == Nothing  = ((1.0 - t) `mulC` branco) `sumC` (t `mulC` azul)
-    | otherwise = corColisao
-      where hit = closestHit ray myrange world
+rayColor :: World -> Ray -> Aleatorio Color
+rayColor w r = rayColor' w r depth
+
+rayColor' :: World -> Ray -> Int -> Aleatorio Color
+rayColor' _ _ 0 = return cPreto
+rayColor' world ray depth =
+  do
+    randomRay <- randomUnitVec3
+    if rayHits then
+            fmap (mulC 0.5)  (rayColor' world (Ray (getColisionPoint $ extractValue hit) (sumV semiTarget randomRay `subV` getColisionPoint (extractValue hit))) (depth-1))
+    else return defaultColor
+      where rayHits = isJust hit
+            defaultColor = ((1.0 - t) `mulC` cBranco) `sumC` (t `mulC` cAzulCeu)
+            hit = closestHit ray myrange world
             myrange = (0, 999999999)
             t = 0.5 * (dy + 1)
             dy = getY $ unitarioV $ getRayDirection ray
             normalDir = unitarioV $ getNormalHit $ extractValue hit
             corColisao = 0.5 `mulC` Color (getX normalDir + 1) (getY normalDir + 1) (getZ normalDir + 1)
+            semiTarget =  sumV (getColisionPoint $ extractValue hit) (getNormalHit $ extractValue hit)
 data Ray = Ray
   { getRayOrigin :: Vec3,
     getRayDirection :: Vec3
   }
   deriving (Show, Eq)
+type RayBundle = [Ray]
 
 getRayAt :: Ray -> Double -> Vec3
 getRayAt ray t = getRayOrigin ray `sumV` mulV t (getRayDirection ray)
 
---hitSphere :: Vec3 -> Double -> Ray -> Double
---hitSphere centro raioEsfera ray = if discriminant < 0 then -1 else smallestPoint
-        --where a = getRayDirection ray ⋅ getRayDirection ray
-              --b = 2 * (oc ⋅ getRayDirection ray)
-              --c = (oc ⋅ oc) - raioEsfera*raioEsfera;
-              --oc = getRayOrigin ray `subV` centro
-              --discriminant = b*b - (4 * a * c)
-              --smallestPoint = (-b - sqrt discriminant) / 2*a
 data Sphere = Sphere {
                         getSphereCenter :: Vec3 -- ponto
                      ,  getSphereRadius :: Double
@@ -150,13 +165,13 @@ hitSphere sphere ray (minDist, maxDist)  = if not $ any (valueInInterval (minDis
                                                     c = (oc ⋅ oc) - getSphereRadius sphere ^ 2
                                                     oc = getRayOrigin ray `subV` getSphereCenter sphere
                                                     discriminant = halfb ^ 2 - a*c
-                                                    sqrtd = sqrt discriminant 
-                                                    root1 = (-halfb - sqrtd) / a 
+                                                    sqrtd = sqrt discriminant
+                                                    root1 = (-halfb - sqrtd) / a
                                                     root2  = (-halfb + sqrtd) / a
                                                     colisionPoint = getRayAt ray smallestPoint
                                                     normal = (1/getSphereRadius sphere) `mulV` (colisionPoint `subV` getSphereCenter sphere)
                                                     smallestPoint = smallestInInterval [root1,root2] (minDist, maxDist)
-                                                    frontFace = unitarioV (getRayDirection ray) `dotV` unitarioV normal < 0
+                                                    frontFace = getRayDirection ray `dotV` normal < 0
 valueInInterval :: (Double, Double) -> Double -> Bool
 valueInInterval (min, max) v
  | min < v && v < max = True
@@ -166,3 +181,18 @@ smallestInInterval :: [Double] -> (Double, Double) -> Double
 smallestInInterval numbers interval = minimum  pontosNoIntervalo
   where
     pontosNoIntervalo = filter (valueInInterval interval) numbers
+
+type Aleatorio a = State StdGen a
+randomDouble :: Aleatorio Double
+randomDouble = state random
+
+randomVec3 :: Aleatorio Vec3
+randomVec3 = do
+                x <- randomDouble
+                y <- randomDouble
+                Vec3 x y <$> randomDouble
+randomUnitVec3 :: Aleatorio Vec3
+randomUnitVec3 = do
+                  v <- randomVec3
+                  if v `dotV` v <= 1 then pure v else randomUnitVec3
+

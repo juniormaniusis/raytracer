@@ -9,6 +9,7 @@ cBranco   = Color 1 1 1
 cPreto    = Color 0 0 0
 cAzulCeu  = Color 0.5 0.7 1.0
 
+
 sumC :: Color -> Color -> Color
 (Color x1 y1 z1) `sumC` (Color x2 y2 z2) = Color (x1 + x2) (y1 + y2) (z1 + z2)
 mulC :: Double -> Color -> Color

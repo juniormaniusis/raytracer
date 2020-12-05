@@ -9,6 +9,7 @@ import Control.Parallel.Strategies
 import Control.Exception
 import Data.Time.Clock
 import Control.DeepSeq
+import Data.Foldable
 -- configurações da imagem
 -- image
 aspectRatio :: Double
@@ -46,26 +47,31 @@ type Coordinate = (Integer, Integer)
 makeRayBundle :: Vec3 -> Coordinate -> RayBundle
 makeRayBundle origem (x, y) = [Ray origem (makeDirection (fromInteger x + d) (fromInteger y + d)) | d <- take samplePerPixel (randoms (mkStdGen (fromInteger x + fromInteger y)) :: [Double])]
 
+
+brancoM :: Aleatorio Color 
+brancoM = do 
+            return cBranco
+
 main :: IO ()
 main = do
   t0 <- getCurrentTime
   print t0
   g <- getStdGen
-  let pixels = fmap (map ((++ "\n") . show)) (evaluateRayBundle raios world)
   let header = "P3\n"++ show imageWidth ++ " " ++ show imageHeight ++ "\n255\n"
   let s = evalState pixels g
+  let s' = s `using` parList rdeepseq 
   let fp = "image" ++  show t0 ++ ".ppm"
-  writeFile fp (header ++ concat s)
+  writeFile fp (header ++ concat s')
   t1 <- getCurrentTime
   print (diffUTCTime t1 t0)
     where
       raios = [ makeRayBundle origin (i, j) | j <- [imageHeight - 1, imageHeight - 2 .. 0], i <- [0 .. imageWidth - 1] ]
+      pixels = fmap (map ((++ "\n") . show)) (evaluateRayBundle raios world)
       world = [
                 Sphere (Vec3 0 0 (-1)) 0.5,
                 Sphere (Vec3 2 0 (-1.5)) 0.25,
                 Sphere (Vec3 0 (-100.5) (-1)) 100
               ]
-
 
 
 evaluateRayBundle :: [RayBundle] -> World -> Aleatorio [Color]
@@ -102,13 +108,12 @@ validHit Nothing = False
 validHit (Just _) = True
 
 rayBundleColor :: RayBundle ->  World -> Aleatorio Color
-rayBundleColor [r] world  = do rayColor' world r depth
-rayBundleColor (r:rs) world = do
-
-                                  color <- rayColor' world r depth
-                                  restBundleColor <- rayBundleColor rs world
-                                  return (sumC color restBundleColor)
-
+rayBundleColor rb w =    foldl' sumCM brancoM colors
+                          where colors = map (rayColor w) rb
+sumCM :: Aleatorio Color -> Aleatorio Color -> Aleatorio Color
+sumCM a b = do
+              a' <- a
+              sumC a' <$> b
 
 rayColor :: World -> Ray -> Aleatorio Color
 rayColor w r = rc `using` rseq

@@ -77,28 +77,6 @@
   (major1) == 1 && (major2) == 9 && (minor) <= 3)
 #endif /* MIN_VERSION_time */
 
-/* tool alex-3.2.5 */
-#ifndef TOOL_VERSION_alex
-#define TOOL_VERSION_alex "3.2.5"
-#endif /* TOOL_VERSION_alex */
-#ifndef MIN_TOOL_VERSION_alex
-#define MIN_TOOL_VERSION_alex(major1,major2,minor) (\
-  (major1) <  3 || \
-  (major1) == 3 && (major2) <  2 || \
-  (major1) == 3 && (major2) == 2 && (minor) <= 5)
-#endif /* MIN_TOOL_VERSION_alex */
-
-/* tool cpphs-1.20.9 */
-#ifndef TOOL_VERSION_cpphs
-#define TOOL_VERSION_cpphs "1.20.9"
-#endif /* TOOL_VERSION_cpphs */
-#ifndef MIN_TOOL_VERSION_cpphs
-#define MIN_TOOL_VERSION_cpphs(major1,major2,minor) (\
-  (major1) <  1 || \
-  (major1) == 1 && (major2) <  20 || \
-  (major1) == 1 && (major2) == 20 && (minor) <= 9)
-#endif /* MIN_TOOL_VERSION_cpphs */
-
 /* tool gcc-12.0.0 */
 #ifndef TOOL_VERSION_gcc
 #define TOOL_VERSION_gcc "12.0.0"
@@ -143,17 +121,6 @@
   (major1) == 2 && (major2) == 23 && (minor) <= 0)
 #endif /* MIN_TOOL_VERSION_haddock */
 
-/* tool happy-1.19.12 */
-#ifndef TOOL_VERSION_happy
-#define TOOL_VERSION_happy "1.19.12"
-#endif /* TOOL_VERSION_happy */
-#ifndef MIN_TOOL_VERSION_happy
-#define MIN_TOOL_VERSION_happy(major1,major2,minor) (\
-  (major1) <  1 || \
-  (major1) == 1 && (major2) <  19 || \
-  (major1) == 1 && (major2) == 19 && (minor) <= 12)
-#endif /* MIN_TOOL_VERSION_happy */
-
 /* tool hpc-0.67 */
 #ifndef TOOL_VERSION_hpc
 #define TOOL_VERSION_hpc "0.67"
@@ -175,17 +142,6 @@
   (major1) == 0 && (major2) <  68 || \
   (major1) == 0 && (major2) == 68 && (minor) <= 7)
 #endif /* MIN_TOOL_VERSION_hsc2hs */
-
-/* tool hscolour-1.24 */
-#ifndef TOOL_VERSION_hscolour
-#define TOOL_VERSION_hscolour "1.24"
-#endif /* TOOL_VERSION_hscolour */
-#ifndef MIN_TOOL_VERSION_hscolour
-#define MIN_TOOL_VERSION_hscolour(major1,major2,minor) (\
-  (major1) <  1 || \
-  (major1) == 1 && (major2) <  24 || \
-  (major1) == 1 && (major2) == 24 && (minor) <= 0)
-#endif /* MIN_TOOL_VERSION_hscolour */
 
 /* tool pkg-config-0.29.2 */
 #ifndef TOOL_VERSION_pkg_config

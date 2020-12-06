@@ -29,12 +29,12 @@ version :: Version
 version = Version [0,1,0,0] []
 bindir, libdir, dynlibdir, datadir, libexecdir, sysconfdir :: FilePath
 
-bindir     = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/6f5504bf4f37353b830a624e8abb180980be95ad2ee177a2827bb1a1d73a3d4d/8.8.4/bin"
-libdir     = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/6f5504bf4f37353b830a624e8abb180980be95ad2ee177a2827bb1a1d73a3d4d/8.8.4/lib/x86_64-linux-ghc-8.8.4/raytracer-0.1.0.0-7AVvOC7sDRL79wuq35LMQa-raytracer"
-dynlibdir  = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/6f5504bf4f37353b830a624e8abb180980be95ad2ee177a2827bb1a1d73a3d4d/8.8.4/lib/x86_64-linux-ghc-8.8.4"
-datadir    = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/6f5504bf4f37353b830a624e8abb180980be95ad2ee177a2827bb1a1d73a3d4d/8.8.4/share/x86_64-linux-ghc-8.8.4/raytracer-0.1.0.0"
-libexecdir = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/6f5504bf4f37353b830a624e8abb180980be95ad2ee177a2827bb1a1d73a3d4d/8.8.4/libexec/x86_64-linux-ghc-8.8.4/raytracer-0.1.0.0"
-sysconfdir = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/6f5504bf4f37353b830a624e8abb180980be95ad2ee177a2827bb1a1d73a3d4d/8.8.4/etc"
+bindir     = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/d318b8a32b916bbf53deb7f479ed14fa1cd23ea172272705433c5cec75b109e2/8.8.4/bin"
+libdir     = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/d318b8a32b916bbf53deb7f479ed14fa1cd23ea172272705433c5cec75b109e2/8.8.4/lib/x86_64-linux-ghc-8.8.4/raytracer-0.1.0.0-AP2SBAJx6lc9xoNUfZ00na-raytracer"
+dynlibdir  = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/d318b8a32b916bbf53deb7f479ed14fa1cd23ea172272705433c5cec75b109e2/8.8.4/lib/x86_64-linux-ghc-8.8.4"
+datadir    = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/d318b8a32b916bbf53deb7f479ed14fa1cd23ea172272705433c5cec75b109e2/8.8.4/share/x86_64-linux-ghc-8.8.4/raytracer-0.1.0.0"
+libexecdir = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/d318b8a32b916bbf53deb7f479ed14fa1cd23ea172272705433c5cec75b109e2/8.8.4/libexec/x86_64-linux-ghc-8.8.4/raytracer-0.1.0.0"
+sysconfdir = "/home/loweer/repos/haskell/2020-qs-paradigmas-diurno-projetofinal-juniormaniusis/raytracer/.stack-work/install/x86_64-linux-tinfo6/d318b8a32b916bbf53deb7f479ed14fa1cd23ea172272705433c5cec75b109e2/8.8.4/etc"
 
 getBinDir, getLibDir, getDynLibDir, getDataDir, getLibexecDir, getSysconfDir :: IO FilePath
 getBinDir = catchIO (getEnv "raytracer_bindir") (\_ -> return bindir)

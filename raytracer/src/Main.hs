@@ -16,7 +16,7 @@ aspectRatio :: Double
 aspectRatio = 16.0 / 9.0
 
 imageWidth :: Integer
-imageWidth = 800
+imageWidth = 400
 
 imageHeight :: Integer
 imageHeight = round $ fromInteger imageWidth / aspectRatio
@@ -49,8 +49,7 @@ makeRayBundle origem (x, y) = [Ray origem (makeDirection (fromInteger x + d) (fr
 
 
 brancoM :: Aleatorio Color 
-brancoM = do 
-            return cBranco
+brancoM = return cBranco
 
 main :: IO ()
 main = do
@@ -59,27 +58,27 @@ main = do
   g <- getStdGen
   let header = "P3\n"++ show imageWidth ++ " " ++ show imageHeight ++ "\n255\n"
   let s = evalState pixels g
-  let s' = s `using` parList rdeepseq 
+  print $ length s
   let fp = "image" ++  show t0 ++ ".ppm"
-  writeFile fp (header ++ concat s')
+  writeFile fp (header ++ concat s)
   t1 <- getCurrentTime
   print (diffUTCTime t1 t0)
     where
       raios = [ makeRayBundle origin (i, j) | j <- [imageHeight - 1, imageHeight - 2 .. 0], i <- [0 .. imageWidth - 1] ]
       pixels = fmap (map ((++ "\n") . show)) (evaluateRayBundle raios world)
       world = [
-                Sphere (Vec3 0 0 (-1)) 0.5,
-                Sphere (Vec3 2 0 (-1.5)) 0.25,
-                Sphere (Vec3 0 (-100.5) (-1)) 100
+                
+                Sphere (Vec3 (-1)     (-0.05)   (-1))     0.1,
+                Sphere (Vec3 (-0.75)  0         (-1.75))  0.2,
+                Sphere (Vec3 (-0)     0         (-1.5))   0.2,
+                Sphere (Vec3  0.75    0         (-1.75))  0.1,
+                Sphere (Vec3  1       0         (-1.5))   0.3,
+                Sphere (Vec3  0       (-100.25) (-1))     100
               ]
 
 
 evaluateRayBundle :: [RayBundle] -> World -> Aleatorio [Color]
-evaluateRayBundle [] _  = do return []
-evaluateRayBundle (x:xs) w  = do
-                            color <-  rayBundleColor  x w
-                            otherColors <- evaluateRayBundle xs w
-                            return (color : otherColors)
+evaluateRayBundle rs w = mapM (rayBundleColor w) rs
 
 makeDirection :: Double -> Double -> Vec3
 makeDirection i j = lowerLeftCorner `sumV` (u `mulV` horizontal) `sumV` (v `mulV` vertical) `subV` origin
@@ -107,8 +106,8 @@ validHit :: Maybe HitRecord -> Bool
 validHit Nothing = False
 validHit (Just _) = True
 
-rayBundleColor :: RayBundle ->  World -> Aleatorio Color
-rayBundleColor rb w =    foldl' sumCM brancoM colors
+rayBundleColor :: World -> RayBundle ->   Aleatorio Color
+rayBundleColor w rb  =    foldl' sumCM brancoM colors
                           where colors = map (rayColor w) rb
 sumCM :: Aleatorio Color -> Aleatorio Color -> Aleatorio Color
 sumCM a b = do
@@ -116,8 +115,7 @@ sumCM a b = do
               sumC a' <$> b
 
 rayColor :: World -> Ray -> Aleatorio Color
-rayColor w r = rc `using` rseq
-                where rc =  rayColor' w r depth
+rayColor w r = rayColor' w r depth
 
 rayColor' :: World -> Ray -> Int -> Aleatorio Color
 rayColor' _ _ 0 = return cPreto
@@ -125,7 +123,7 @@ rayColor' world ray depth =
   do
     randomRay <- randomUnitVec3
     if rayHits then
-            fmap (mulC 0.5)  (rayColor' world (Ray (getColisionPoint $ extractValue hit) (sumV semiTarget randomRay `subV` getColisionPoint (extractValue hit))) (depth-1))
+            fmap (mulC 0.5)  (force rayColor' world (Ray (getColisionPoint $ extractValue hit) (sumV semiTarget randomRay `subV` getColisionPoint (extractValue hit))) (depth-1))
     else return defaultColor
       where rayHits = isJust hit
             defaultColor = ((1.0 - t) `mulC` cBranco) `sumC` (t `mulC` cAzulCeu)
@@ -133,8 +131,6 @@ rayColor' world ray depth =
             myrange = (0, 999999999)
             t = 0.5 * (dy + 1)
             dy = getY $ unitarioV $ getRayDirection ray
-            normalDir = unitarioV $ getNormalHit $ extractValue hit
-            corColisao = 0.5 `mulC` Color (getX normalDir + 1) (getY normalDir + 1) (getZ normalDir + 1)
             semiTarget =  sumV (getColisionPoint $ extractValue hit) (getNormalHit $ extractValue hit)
 data Ray = Ray
   { getRayOrigin :: Vec3,
